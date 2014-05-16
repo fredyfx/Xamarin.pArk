@@ -11,7 +11,7 @@ namespace Xamarin.pArk
 
         public static void CreateProjectionMatrix(ref float[] mout, float aspect, float zNear, float zFar)
         {
-            float fovy = (float) (60.0*DEGREES_TO_RADIANS);
+            float fovy = (float)(60.0 * DEGREES_TO_RADIANS);
             float f = (float)(1.0 / Math.Tan(fovy / 2.0));
 
             mout[0] = f / aspect;
@@ -89,16 +89,9 @@ namespace Xamarin.pArk
 
             double N = WGS84_A / Math.Sqrt(1.0 - WGS84_E * WGS84_E * slat * slat);
 
-            x = (N + alt)*clat*clon;
-            y = (N + alt)*clat*slon;
-            z = (N + (1.0 - WGS84_E*WGS84_E) + alt)*slat;
-        }
-
-        class Enu
-        {
-            public double e;
-            public double n;
-            public double u;
+            x = (N + alt) * clat * clon;
+            y = (N + alt) * clat * slon;
+            z = (N + (1.0 - WGS84_E * WGS84_E) + alt) * slat;
         }
 
         public static void EcefToEnu(double lat, double lon, double x, double y, double z, double xr, double yr, double zr, ref double e, ref double n, ref double u)
@@ -111,9 +104,9 @@ namespace Xamarin.pArk
             double dy = y - yr;
             double dz = z - zr;
 
-            e = -slon*dx + clon*dy;
-            n = -slat*clon*dx - slat*slon*dy + clat*dz;
-            u = clat*clon*dx + clat*slon*dy + slat*dz;
+            e = -slon * dx + clon * dy;
+            n = -slat * clon * dx - slat * slon * dy + clat * dz;
+            u = clat * clon * dx + clat * slon * dy + slat * dz;
         }
     }
 }
