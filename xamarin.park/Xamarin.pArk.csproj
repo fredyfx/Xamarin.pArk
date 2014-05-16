@@ -97,7 +97,6 @@
     <None Include="Entitlements.plist" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LocationDelegate.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="MathHelpers.cs" />
@@ -105,6 +104,8 @@
     <Compile Include="PlaceOfInterest.cs" />
     <Compile Include="ARView.cs" />
     <Compile Include="MediaDevices.cs" />
+    <Compile Include="LocationUpdatedEventArgs.cs" />
+    <Compile Include="LocationManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
 </Project>

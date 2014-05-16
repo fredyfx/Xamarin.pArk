@@ -17,8 +17,6 @@ namespace Xamarin.pArk
         AVCaptureSession captureSession;
         AVCaptureVideoPreviewLayer captureLayer;
 
-        CLLocationManager locationManager;
-
         CMMotionManager motionManager;
 
         CADisplayLink displayLink;
@@ -46,7 +44,6 @@ namespace Xamarin.pArk
         public void Start()
         {
             StartCameraPreview();
-            StartLocation();
             StartDeviceMotion();
             //            StartDisplayLink();
         }
@@ -54,7 +51,6 @@ namespace Xamarin.pArk
         public void Stop()
         {
             StopCameraPreview();
-            StopLocation();
             StopDeviceMotion();
             //            StopDisplayLink();
         }
@@ -72,17 +68,7 @@ namespace Xamarin.pArk
 
             captureSession.StartRunning();
         }
-
-        private void StartLocation()
-        {
-            locationManager = new CLLocationManager
-            {
-                DistanceFilter = 1, 
-                Delegate = new LocationDelegate(this)
-            };
-            locationManager.StartUpdatingLocation();
-        }
-
+            
         class DistanceAndIndex
         {
             public float distance;
@@ -206,12 +192,7 @@ namespace Xamarin.pArk
         {
             captureSession.StopRunning();
         }
-
-        private void StopLocation()
-        {
-            locationManager.StopUpdatingLocation();
-        }
-
+            
         private void StopDeviceMotion()
         {
             motionManager.StopDeviceMotionUpdates();
