@@ -181,7 +181,7 @@ namespace Xamarin.pArk
             CMDeviceMotion motion = motionManager.DeviceMotion;
             if (motion != null)
             {
-                cameraTransform = new float[4];
+                cameraTransform = new float[16];
                 MathHelpers.TransformFromCMRotationMatrix(ref cameraTransform, motion.Attitude.RotationMatrix);
 
                 SetNeedsDisplay();
