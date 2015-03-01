@@ -5,12 +5,26 @@ namespace Xamarin.pArk
 {
     public class PlaceOfInterest
     {
-        public UIView View {
+        public int Id
+        {
             get;
             set;
         }
 
-        public CLLocation Location {
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public UIView View 
+        {
+            get;
+            set;
+        }
+
+        public CLLocation Location 
+        {
             get;
             set;
         }

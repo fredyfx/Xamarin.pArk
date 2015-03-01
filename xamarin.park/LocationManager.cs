@@ -37,10 +37,9 @@ namespace Xamarin.pArk
 
                 // Location updates are handled differently pre-iOS 6. If we want to support older versions of iOS,
                 // we want to do perform this check and let our LocationManager know how to handle location updates.
-
-                if (UIDevice.CurrentDevice.CheckSystemVersion(6, 0))
+                if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
                 {
-
+                    LocManager.RequestWhenInUseAuthorization ();
                     LocManager.LocationsUpdated += (object sender, CLLocationsUpdatedEventArgs e) =>
                     {
                         // fire our custom Location Updated event
