@@ -19,7 +19,6 @@ namespace Xamarin.pArk
 
         CMMotionManager motionManager;
 
-        CADisplayLink displayLink;
 
         float[] projectionTransform;
         float[] cameraTransform;
@@ -45,14 +44,12 @@ namespace Xamarin.pArk
         {
             StartCameraPreview();
             StartDeviceMotion();
-            //            StartDisplayLink();
         }
             
         public void Stop()
         {
             StopCameraPreview();
             StopDeviceMotion();
-            //            StopDisplayLink();
         }
 
        
@@ -69,24 +66,15 @@ namespace Xamarin.pArk
             captureSession.StartRunning();
         }
             
-        class DistanceAndIndex
-        {
-            public float distance;
-            public int index;
-        }
-
         public void UpdatePlacesOfInterestCoordinates(CLLocation newLocation)
         {
             double myX = 0.0, myY = 0.0, myZ = 0.0;
             MathHelpers.LatLonToEcef(newLocation.Coordinate.Latitude, newLocation.Coordinate.Longitude, 0.0, ref myX, ref myY, ref myZ);
-            var orderedDistances = new List<DistanceAndIndex>();
 
             placesOfInterestCoordinates = new List<float[]>();
 
-            for (int i = 0; i < PlacesOfInterest.Count;i++)
+            foreach (var poi in PlacesOfInterest)
             {
-                var poi = PlacesOfInterest[i];
-
                 double poiX = 0.0, poiY = 0.0, poiZ = 0.0, e = 0.0, n = 0.0, u = 0.0;
                 MathHelpers.LatLonToEcef(poi.Location.Coordinate.Latitude, poi.Location.Coordinate.Longitude, 0.0, ref poiX, ref poiY, ref poiZ);
                 MathHelpers.EcefToEnu(poi.Location.Coordinate.Latitude, poi.Location.Coordinate.Longitude, myX, myY, myZ, poiX, poiY, poiZ, ref e, ref n, ref u);
@@ -99,22 +87,35 @@ namespace Xamarin.pArk
 
                 placesOfInterestCoordinates.Add(p);
 
-                var distance = new DistanceAndIndex
+                if (poi.View == null)
                 {
-                    distance = (float)Math.Sqrt(n*n + e*e),
-                    index = i
-                };
-                orderedDistances.Add(distance);               
-            }
+                    var label = new UILabel
+                    {
+                        AdjustsFontSizeToFitWidth = false,
+                        Opaque = false,
+                        BackgroundColor = new UIColor(0.1f, 0.1f, 0.1f, 0.5f),
+                        Center = new PointF(200.0f, 200.0f),
+                        TextAlignment = UITextAlignment.Center,
+                        TextColor = UIColor.White,
+                        Lines = 0,
+                        LineBreakMode = UILineBreakMode.WordWrap,
+                        Hidden = true
+                    };
 
-            orderedDistances.Sort((A, B) =>
-            {
-                return 0;
-            });
-
-            foreach (var dai in orderedDistances)
-            {
-                AddSubview(PlacesOfInterest[dai.index].View);
+                    poi.View = label;
+                    AddSubview(poi.View);
+                }
+                var distance = newLocation.DistanceFrom(new CLLocation(poi.Location.Coordinate.Latitude, poi.Location.Coordinate.Longitude));
+                if (distance > 1000)
+                {
+                    ((UILabel)poi.View).Text = string.Format("{0} - {1:F} km", poi.Name, distance/1000);
+                }
+                else
+                {
+                    ((UILabel)poi.View).Text = string.Format("{0} - {1:F} m", poi.Name, distance);
+                }
+                var size = ((UILabel)poi.View).StringSize(((UILabel)poi.View).Text, ((UILabel)poi.View).Font);
+                ((UILabel)poi.View).Bounds = new RectangleF(0.0f, 0.0f, size.Width, size.Height);
             }
         }
 
@@ -158,7 +159,7 @@ namespace Xamarin.pArk
                 DeviceMotionUpdateInterval = 1.0/60.0
             };
             //motionManager.StartDeviceMotionUpdates(CMAttitudeReferenceFrame.XTrueNorthZVertical);
-            motionManager.StartDeviceMotionUpdates(NSOperationQueue.CurrentQueue, (motion, error) =>
+            motionManager.StartDeviceMotionUpdates(CMAttitudeReferenceFrame.XTrueNorthZVertical, NSOperationQueue.CurrentQueue, (motion, error) =>
             {
                 if(motion != null)
                 {
@@ -168,14 +169,7 @@ namespace Xamarin.pArk
                 }
             });
         }
-
-        private void StartDisplayLink()
-        {
-            displayLink = CADisplayLink.Create(UpdateDisplay);
-            displayLink.FrameInterval = 1;
-            displayLink.AddToRunLoop(NSRunLoop.Main, NSRunLoop.UITrackingRunLoopMode);
-        }
-
+            
         void UpdateDisplay()
         {
             CMDeviceMotion motion = motionManager.DeviceMotion;
@@ -196,11 +190,6 @@ namespace Xamarin.pArk
         private void StopDeviceMotion()
         {
             motionManager.StopDeviceMotionUpdates();
-        }
-
-        private void StopDisplayLink()
-        {
-            displayLink.Invalidate();
         }
     }
 }
